@@ -1,11 +1,11 @@
-# word-game
+# Word Game
 This is a simple two-player word game, one player being a computer.
 
 Tips
 ------------
-Players take turns to say letters.
-If a player says a word that ends a word, they lose.
-A letter that does not spell a word leads to a loss.
+- Players take turns to say letters.
+- If a player says a word that ends a word, they lose.
+- A letter that does not spell a word leads to a loss.
 
 Instructions
 -----------
