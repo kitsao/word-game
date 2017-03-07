@@ -20,39 +20,19 @@ WORDLIST_FILENAME = "words.txt"
 
 def loadWords():
     """
-    Returns a list of valid words. Words are strings of lowercase letters.
+    Returns a Set of valid words. Words are strings of lowercase letters.
 
-    Depending on the size of the word list, this function may
+    Depending on the size of the word Set, this function may
     take a while to finish.
     """
-    print "Loading word list from file..."
+    print "Loading word Set from file..."
     # inFile: file
     inFile = open(WORDLIST_FILENAME, 'r', 0)
-    # wordList: list of strings
-    wordList = []
-    for line in inFile:
-        wordList.append(line.strip().lower())
-    print len(wordList), "words loaded."
+    # wordSet: Set of strings
+    wordSet = set(line.strip().lower() for line in inFile)
+    print len(wordSet), "words loaded."
     print "---------------------------------------------------------\n"
-    return wordList
-
-
-def getFrequencyDict(sequence):
-    """
-    Returns a dictionary where the keys are elements of the sequence
-    and the values are integer counts, for the number of times that
-    an element is repeated in the sequence.
-
-    sequence: string or list
-    return: dictionary
-    """
-    # freqs: dictionary (element_type -> int)
-    freq = {}
-    for x in sequence:
-        freq[x] = freq.get(x, 0) + 1
-    return freq
-
-
+    return wordSet
 # (end of helper code)
 # -----------------------------------
 #
@@ -98,15 +78,15 @@ def isOneLetter(letter):
 # Function #3: Get the last characters of all strings in the loaded words
 #
 
-def getLastChars(wordList):
+def getLastChars(wordSet):
     """
-    Returns a list of characters at the end of each string
+    Returns a Set of characters at the end of each string
 
-    wordList: List of loaded words
+    wordSet: Set of loaded words
     returns: unique array of characters
     """
     lttrs = []
-    for word in wordList:
+    for word in wordSet:
         lttrs.append(word[-1:])
     return lttrs
 
@@ -114,17 +94,17 @@ def getLastChars(wordList):
 #
 # Function #4: Get the last characters of all strings in the loaded words
 #
-def getPreceedingChars(word, wordList):
+def getPreceedingChars(word, wordSet):
     """
-    Return list of the possible preceeding letter after a chosen letter
+    Return Set of the possible preceeding letter after a chosen letter
 
-    wordList: List of loaded words
+    wordSet: Set of loaded words
     returns: unique array of characters
     """
     # Declare variable for length of the current word.
     lttrs = []
     word_len = 0
-    for ross in wordList:
+    for ross in wordSet:
         if word:
             word_len=len(word)
         lttrs.append(ross[word_len:word_len + 1])
@@ -132,26 +112,26 @@ def getPreceedingChars(word, wordList):
 
 
 #
-# Function #5: Trim the list of words using the given substring
+# Function #5: Trim the Set of words using the given substring
 #
-def getTrimmedList(word, wordList):
+def getTrimmedSet(word, wordSet):
     """
-    Return list words beginning with the given substring
+    Return Set words beginning with the given substring
 
-    wordList: List of loaded words
+    wordSet: Set of loaded words
     returns: unique array of characters
     """
-    newWordList=[]
-    for i in wordList:
+    newWordSet=set()
+    for i in wordSet:
         if i.startswith(word):
-            newWordList.append(i)
-    return newWordList
+            newWordSet.add(i)
+    return newWordSet
 
 
 #
 # Function #6: Check if letter ends a word
 #
-def getEndsWord(word, wordList):
+def getEndsWord(word, wordSet):
     """
     Checks if given letter ends a word.
     word: string (lowercase letters)
@@ -160,7 +140,7 @@ def getEndsWord(word, wordList):
     counter = 0
     if word == '':
         return 0
-    for wrd in wordList:
+    for wrd in wordSet:
         if wrd.endswith(word) or word not in wrd:
             counter += counter
         return counter
@@ -169,7 +149,7 @@ def getEndsWord(word, wordList):
 #
 # Function #7: Playing a letter
 #
-def playLetter(wordList, ltr):
+def playLetter(wordSet, ltr):
     """
     Allows the user to enter a letter:
 
@@ -201,13 +181,13 @@ def playLetter(wordList, ltr):
             print('\n' + 'Invalid letter, please try again.')
         # Otherwise:
         else:
-            # Update the word list
+            # Update the word Set
             if ltr:
                 letter = ltr+letter
-            wordList = getTrimmedList(letter, wordList)
+            wordSet = getTrimmedSet(letter, wordSet)
     # Computer's turn to play
-    if winOrLoss(letter, wordList)==0:
-        compPlayLetter(wordList, letter)
+    if winOrLoss(letter, wordSet)==0:
+        compPlayLetter(wordSet, letter)
     else:
         print "---------------------------------------------------------\n"
         print("Game Over. You Lost.")
@@ -217,7 +197,7 @@ def playLetter(wordList, ltr):
 # Function #8: Playing a game
 #
 
-def playGame(wordList):
+def playGame(wordSet):
     """
     Keep the game in play.
 
@@ -227,7 +207,7 @@ def playGame(wordList):
     while True:
         choice = raw_input('Enter n to play, or e to end game: ')
         if choice == 'n':
-            playLetter(wordList)
+            playLetter(wordSet)
         elif choice == 'e':
             break
         else:
@@ -238,32 +218,32 @@ def playGame(wordList):
 # Function #9: Computer chooses a letter
 #
 #
-def compChooseWord(wordList, ltr):
+def compChooseWord(wordSet, ltr):
     """
-    Given the current string and list of words, return the best letter
+    Given the current string and Set of words, return the best letter
     ltr: Currently available letters
-    wordList: List of valid words loaded
+    wordSet: Set of valid words loaded
 
     returns: string
     """
     # New letter variable
     best_letter = ''
-    # Get list of last characters
-    last_chars=list(set(getLastChars(wordList)))
+    # Get Set of last characters
+    last_chars=set(getLastChars(wordSet))
     # Get all possible next characters
-    next_chars=list(set(getPreceedingChars(ltr, wordList)))
+    next_chars=set(getPreceedingChars(ltr, wordSet))
     # Strip characters in last_chars from next_chars
     if len(next_chars)==1:
         best_letter=''.join(next_chars)
     else:
-        best_letter=random.choice(next_chars)
+        best_letter=random.choice(tuple(next_chars))
     # return the best letter found.
     return best_letter
 
 #
 # Function #10: Computer plays a letter
 #
-def compPlayLetter(wordList, ltr):
+def compPlayLetter(wordSet, ltr):
     """
     Allows the computer to play, computer chooses a letter.
 
@@ -272,19 +252,19 @@ def compPlayLetter(wordList, ltr):
     3) The letter must lead to a valid word.
  
     letter: letter to be chosen
-    wordList: list of valid words loaded
+    wordSet: Set of valid words loaded
     """
     if ltr:
         print('\n')
         print('Current Letter(s): ' + ltr)
-    letter = compChooseWord(wordList, ltr)
+    letter = compChooseWord(wordSet, ltr)
     if isValidLetter(letter):
         print('Computer\'s Letter: ' + letter + '\n'),
     if ltr:
         letter = ltr+letter
     # Other player's turn to play
-    if winOrLoss(letter, wordList)==0:
-        playLetter(wordList, letter)
+    if winOrLoss(letter, wordSet)==0:
+        playLetter(wordSet, letter)
     else:
         print "---------------------------------------------------------\n"
         print("Hoooooooray! You won!")
@@ -294,10 +274,10 @@ def compPlayLetter(wordList, ltr):
 # Function #11: Playing the game
 #
 #
-def playGame(wordList):
+def playGame(wordSet):
     """
     Play the game
-    wordList: list of loaded words
+    wordSet: Set of loaded words
     """
     choice = ''
     while True:
@@ -310,21 +290,22 @@ def playGame(wordList):
                 print "Invalid command."
                 continue
             if player == 'u':
-                playLetter(wordList, ltr=None)
+                playLetter(wordSet, ltr=None)
             elif player == 'c':
-                compPlayLetter(wordList, ltr=None)
+                compPlayLetter(wordSet, ltr=None)
             break
 
 #
 # Function #12: Win/Loss function
 #
-def winOrLoss(str, wordList):
+def winOrLoss(str, wordSet):
     """
     Returns True if a letter is valid.
 
     str: Current letters
-    wordList: List of loaded words
+    wordSet: Set of loaded words
     """
+    wordList=list(wordSet)
     available=[]
     counter=0
     count=0
@@ -342,5 +323,5 @@ def winOrLoss(str, wordList):
 #
 if __name__ == '__main__':
     intro()
-    wordList = loadWords()
-    playGame(wordList)
+    wordSet = loadWords()
+    playGame(wordSet)
